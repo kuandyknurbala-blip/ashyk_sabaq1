@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ашық сабақ: Кері байланыс жүйесі</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --star: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(79, 70, 229, 0.2);
+      border: 1px solid rgba(79, 70, 229, 0.4);
+      color: #a5b4fc;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    /* Навигациялық қосымшалар (Tabs) */
+    .tabs {
+      display: flex;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 5px;
+      margin-bottom: 24px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Карточкалар */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Форма элементтері */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #e2e8f0;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+    }
+
+    /* Жұлдызшамен бағалау */
+    .rating-container {
+      display: flex;
+      gap: 10px;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #475569;
+      margin: 8px 0;
+    }
+
+    .rating-container i.active {
+      color: var(--star);
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+    }
+
+    /* Тегтер */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .tag-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .tag-chip.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), #6366f1);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Статистика тақтасы */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-card .val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .lbl {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .response-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .response-name {
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .response-sub {
+      color: #38bdf8;
+      font-size: 0.85rem;
+    }
+
+    .response-stars {
+      color: var(--star);
+      font-size: 0.9rem;
+    }
+
+    .response-text {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    /* QR бөлімі */
+    .qr-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    #qrcode {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      margin-bottom: 16px;
+    }
+
+    .sync-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--success);
+      margin-bottom: 12px;
+    }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge"><i class="fa-solid fa-graduation-cap"></i> Ашық сабақ платформысы</div>
+      <h1>Педагогикалық кері байланыс</h1>
+      <p class="subtitle">Әріптестердің пікірі мен бағалау нәтижелерін нақты уақытта қабылдау</p>
+    </header>
+
+    <!-- Табтар -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('formTab')">
+        <i class="fa-solid fa-pen-to-square"></i> Сауалнама
+      </button>
+      <button class="tab-btn" onclick="switchTab('resultsTab')">
+        <i class="fa-solid fa-chart-pie"></i> Нәтижелер (<span id="tabCount">0</span>)
+      </button>
+      <button class="tab-btn" onclick="switchTab('qrTab')">
+        <i class="fa-solid fa-qrcode"></i> Экранға QR-код
+      </button>
+    </div>
+
+    <!-- 1-Таб: Сауалнама формасы -->
+    <div id="formTab" class="tab-content active">
+      <div class="card">
+        <h2><i class="fa-regular fa-clipboard" style="color: #818cf8;"></i> Сабақты бағалау</h2>
+        <form id="feedbackForm">
+          <div class="form-group">
+            <label>Сабақтың жалпы бағасы (Жұлдызшаны таңдаңыз)</label>
+            <div class="rating-container" id="stars">
+              <i class="fa-solid fa-star active" data-rating="1"></i>
+              <i class="fa-solid fa-star active" data-rating="2"></i>
+              <i class="fa-solid fa-star active" data-rating="3"></i>
+              <i class="fa-solid fa-star active" data-rating="4"></i>
+              <i class="fa-solid fa-star active" data-rating="5"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Қай әдіс-тәсілдер мен кезеңдер сәтті өтті? (Бирнешеуін таңдауға болады)</label>
+            <div class="tags-container" id="tags">
+              <span class="tag-chip active">Интерактивті әдіс</span>
+              <span class="tag-chip">Топтық жұмыс</span>
+              <span class="tag-chip">Оқушылардың белсенділігі</span>
+              <span class="tag-chip">Уақытты тиімді басқару</span>
+              <span class="tag-chip">АКТ қолданысы</span>
+              <span class="tag-chip">Критериалды бағалау</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="strongPoints">Ерекше ұнаған тұсы немесе сәті:</label>
+            <textarea id="strongPoints" rows="2" placeholder="Мысалы: Оқушылардың жауаптарына берілген кері байланыс өте сәтті болды..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="suggestions">Ұсыныс немесе жылы лебізіңіз:</label>
+            <textarea id="suggestions" rows="2" placeholder="Сабақты одан әрі жақсарту үшін ойыңыз немесе тілегіңіз..."></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div>
+              <label for="authorName">Аты-жөніңіз (қалауыңызша):</label>
+              <input type="text" id="authorName" placeholder="Мысалы: Айгүл Серікқызы">
+            </div>
+            <div>
+              <label for="authorSubject">Пәніңіз:</label>
+              <input type="text" id="authorSubject" placeholder="Мысалы: Математика">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <i class="fa-solid fa-paper-plane"></i> Кері байланыс жіберу
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2-Таб: Нәтижелерді онлайн көру -->
+    <div id="resultsTab" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2><i class="fa-solid fa-square-poll-vertical" style="color: #38bdf8;"></i> Барлық жауаптар</h2>
+          <div class="sync-status">
+            <span class="sync-dot"></span> <span id="syncText">Бұлтпен байланысты</span>
+            <button onclick="fetchOnlineFeedbacks()" style="margin-left: 10px; background: rgba(255,255,255,0.1); border:none; color:#fff; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+              <i class="fa-solid fa-rotate-right"></i> Жаңарту
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="val" id="statCount">0</div>
+            <div class="lbl">Жауап бергендер</div>
+          </div>
+          <div class="stat-card">
+            <div class="val" id="statAvg">5.0</div>
+            <div class="lbl">Орташа балл</div>
+          </div>
+        </div>
+
+        <div id="responsesContainer">
+          <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+            <i class="fa-solid fa-inbox" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+            <p>Әзірге кері байланыстар түскен жоқ.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Таб: Экранға QR-код -->
+    <div id="qrTab" class="tab-content">
+      <div class="card qr-wrapper">
+        <h2><i class="fa-solid fa-qrcode" style="color: #a855f7;"></i> Телефонмен сканерлеу үшін QR-код</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px; max-width: 500px;">
+          Бұл бетті проектор немесе тақтаға шығарыңыз. Қатысушылар телефон камерасын бағыттап, бірден сауалнамаға өтеді.
+        </p>
+        <div id="qrcode"></div>
+        <p id="qrUrlDisplay" style="font-size: 0.85rem; color: #94a3b8; word-break: break-all; margin-top: 10px;"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Бұлтты ортақ база (Кез келген телефоннан жіберілген жауап ортақ серверге барады)
+    // Әркімнің жауабы бір жерге жиналуы үшін бірегей тақта ID-сі:
+    const ROOM_KEY = "ashyk_sabaq_" + window.location.host.replace(/[^a-zA-Z0-9]/g, '_');
+    const API_URL = `https://kvdb.io/4y9pA7h1GkG9tHqTnmZ3Xj/${ROOM_KEY}`;
+
+    let currentRating = 5;
+    let feedbacksList = [];
+
+    // 1. Жұлдызшаны басқанда
+    document.querySelectorAll('#stars i').forEach(star => {
+      star.addEventListener('click', () => {
+        currentRating = parseInt(star.dataset.rating);
+        document.querySelectorAll('#stars i').forEach(s => {
+          s.classList.toggle('active', parseInt(s.dataset.rating) <= currentRating);
+        });
+      });
+    });
+
+    // 2. Тегтерді таңдау
+    document.querySelectorAll('.tag-chip').forEach(tag => {
+      tag.addEventListener('click', () => tag.classList.toggle('active'));
+    });
+
+    // 3. Форманы жіберу (Ортақ бұлтқа жазу)
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Жіберілуде...';
+
+      const selectedTags = Array.from(document.querySelectorAll('.tag-chip.active')).map(t => t.innerText);
+      
+      const newEntry = {
+        id: Date.now(),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        rating: currentRating,
+        tags: selectedTags,
+        strongPoints: document.getElementById('strongPoints').value.trim(),
+        suggestions: document.getElementById('suggestions').value.trim(),
+        name: document.getElementById('authorName').value.trim() || 'Әріптес',
+        subject: document.getElementById('authorSubject').value.trim() || 'Мұғалім'
+      };
+
+      try {
+        // Сервердегі бар деректерді алып, жаңасын қосып қайта сақтаймыз
+        let currentList = [];
+        try {
+          const res = await fetch(API_URL);
+          if (res.ok) {
+            currentList = await res.json();
+            if (!Array.isArray(currentList)) currentList = [];
+          }
+        } catch (_) {}
+
+        currentList.unshift(newEntry);
+
+        await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(currentList)
+        });
+
+        alert("Кері байланысыңыз сәтті қабылданды! Үлкен рақмет!");
+        document.getElementById('feedbackForm').reset();
+        
+        // Жұлдызшаларды бастапқы 5-ке қайтару
+        currentRating = 5;
+        document.querySelectorAll('#stars i').forEach(s => s.classList.add('active'));
+
+        // Нәтижелер тақтасын жаңарту
+        await fetchOnlineFeedbacks();
+        switchTab('resultsTab');
+      } catch (err) {
+        alert("Жіберу кезінде ақау болды, қайталап көріңіз.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Кері байланыс жіберу';
+      }
+    });
+
+    // 4. Ортақ бұлттан барлық жауаптарды жүктеп көрсету
+    async function fetchOnlineFeedbacks() {
+      const syncText = document.getElementById('syncText');
+      syncText.innerText = "Жаңартылуда...";
+      try {
+        const res = await fetch(API_URL + `?t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            feedbacksList = data;
+            renderResponses();
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        syncText.innerText = "Бұлтпен байланысты";
+      }
+    }
+
+    function renderResponses() {
+      const container = document.getElementById('responsesContainer');
+      document.getElementById('tabCount').innerText = feedbacksList.length;
+      document.getElementById('statCount').innerText = feedbacksList.length;
+
+      if (feedbacksList.length === 0) {
+        document.getElementById('statAvg').innerText = "0.0";
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+            <i class="fa-solid fa-inbox" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+            <p>Әзірге кері байланыстар түскен жоқ.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const avg = (feedbacksList.reduce((acc, cur) => acc + (cur.rating || 5), 0) / feedbacksList.length).toFixed(1);
+      document.getElementById('statAvg').innerText = avg;
+
+      container.innerHTML = feedbacksList.map(item => `
+        <div class="response-card">
+          <div class="response-header">
+            <div>
+              <span class="response-name">${item.name}</span>
+              <span class="response-sub">(${item.subject}) • ${item.time}</span>
+            </div>
+            <div class="response-stars">
+              ${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}
+            </div>
+          </div>
+          ${item.tags && item.tags.length ? `
+            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+              ${item.tags.map(t => `<span style="font-size:0.75rem; background:rgba(6,182,212,0.15); color:#22d3ee; padding:2px 8px; border-radius:99px;">${t}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${item.strongPoints ? `<div class="response-text"><strong>Ұнаған тұсы:</strong> ${item.strongPoints}</div>` : ''}
+          ${item.suggestions ? `<div class="response-text" style="margin-top:4px;"><strong>Ұсыныс:</strong> ${item.suggestions}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // 5. Табтарды ауыстыру
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      if (tabId === 'resultsTab') {
+        fetchOnlineFeedbacks();
+      }
+    }
+
+    // 6. QR-кодты бірден сайттың өзінің сілтемесіне байланыстыру
+    window.addEventListener('load', () => {
+      const siteUrl = window.location.href;
+      document.getElementById('qrUrlDisplay').innerText = siteUrl;
+      new QRCode(document.getElementById("qrcode"), {
+        text: siteUrl,
+        width: 220,
+        height: 220,
+        colorDark : "#0f172a",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      // Алғашқы жауаптарды жүктеу
+      fetchOnlineFeedbacks();
+
+      // Әр 5 секунд сайын жаңа жауап түсті ме деп автоматты тексеріп тұрады
+      setInterval(fetchOnlineFeedbacks, 5000);
+    });
+  </script>
+</body>
+</html>
